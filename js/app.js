@@ -14,8 +14,7 @@ const Enemy = function(x, y ,speed) {
 
 // Player constructor class
 const Player = function(x, y ,speed) {
-    this.x = x;
-    this.y = y;
+    Enemy.call(x, y);
     this.sprite = 'images/char-boy.png';
 };
 
@@ -66,10 +65,10 @@ Enemy.prototype.update = function(dt) {
 // Update the player's position
 Player.prototype.update = function(dt) {
 	if(this.ctlKey === 'left' && this.x > 0){
-		this.x -= 100;
+		this.x -= 101;
 		//if r ight key is pressed and player is not on edge of map increment x
 	} else if(this.ctlKey === 'right' && this.x != 400){
-		this.x += 100;
+		this.x += 101;
 		//if up key is pressed increment y
 	} else if(this.ctlKey === 'up'){
 		this.y -= 83;
