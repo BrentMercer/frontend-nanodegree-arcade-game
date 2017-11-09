@@ -4,7 +4,7 @@ frontend-nanodegree-arcade-game
 
 How to run game
 ----------
-Click on index.html or visit my GitHub page (http://<username>.github.io/<repository> - gh-pages) and enjoy the app 
+Click on index.html and enjoy the app 
 
 
 Contribute
