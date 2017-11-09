@@ -1,54 +1,69 @@
-// Review the code and comments provided in app.js
-// Identify the various classes you will need to write.
-// Identify and code the properties each class must have to accomplish its tasks.
-// Write the functions that provide functionality to each of your class instances.
-// Review the project rubric to make sure your project is up to spec. 
-// For example make sure the functions you write are object-oriented
-//   - either class functions (like Player and Enemy) or class prototype functions such 
-//   as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately 
-//   within your class and class prototype functions. Also be sure that the readme.md file is
-//   updated with your instructions on both how to 1. Run and 2. Play your arcade game.
 
 
 
-// Enemies our player must avoid
-var Enemy = function(x, y ,speed) {
+
+// CONSTRUCTORS & INPUT
+
+// Enemies constructor class
+const Enemy = function(x, y ,speed) {
 	this.x = x;
 	this.y = y;
 	this.speed = speed;
 	this.sprite = 'images/enemy-bug.png';
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
-	if(this.x <= 550){
-		this.x += this.speed;
-	} else{
-		this.x = -2;
-	}
-	// You should multiply any movement by the dt parameter
-	// which will ensure the game runs at the same speed for
-	// all computers.
-};
-
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-
-
-
-// Now write your own player class
-var Player = function(x, y ,speed) {
+// Player constructor class
+const Player = function(x, y ,speed) {
     this.x = x;
     this.y = y;
     this.sprite = 'images/char-boy.png';
 };
 
-// Update the player's position, required method for game
-// Parameter: dt, a time delta between ticks
+// Player handle input
+Player.prototype.handleInput = function(e) {
+	this.ctlKey = e;
+};
+
+
+
+
+// DRAW ON SCREEN
+
+// Draw the enemy on the screen
+Enemy.prototype.render = function() {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// Draw the player on the screen
+Player.prototype.render = function() {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// Update enemy locations
+Enemy.prototype.update = function(dt) {
+	
+	// Make enemy move each frame
+	this.x += this.speed;
+
+	// Make enemies reappear after moving offscreen
+	if (this.x >= 550) {
+		this.x = -100;
+
+		// Generate new random speed
+		this.speed = Math.floor(Math.random() * 6) + 3 ;
+	}
+
+	// Check for collisions
+	if (player.x < this.x + 60 &&
+		player.x + 37 > this.x &&
+		player.y < this.y + 25 &&
+		30 + player.y > this.y) {
+		player.x = 200;
+		player.y = 380;
+	}
+};
+
+// Update the player's position
 Player.prototype.update = function(dt) {
 	if(this.ctlKey === 'left' && this.x > 0){
 		this.x -= 100;
@@ -63,24 +78,27 @@ Player.prototype.update = function(dt) {
 		this.y += 83;
 	}
 	this.ctlKey = null;
-	// You should multiply any movement by the dt parameter
-	// which will ensure the game runs at the same speed for
-	// all computers.
+
+	// Prevent player from moving beyond canvas wall boundaries
+	if (this.y > 380) {
+		this.y = 380;
+	}
+	if (this.x > 400) {
+		this.x = 400;
+	}
+	if (this.x < 0) {
+		this.x = 0;
+	}
+
+	// Check for player reaching water and winning
+	if (this.y < 0) {
+		alert("YOU WIN!!!")
+		this.x = 200;
+		this.y = 380;
+	}
 };
 
-// Draw the enemy on the screen, required method for game
-Player.prototype.render = function() {
-	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-Player.prototype.handleInput = function(e) {
-	this.ctlKey = e;
-};
-
-
-
-// This class requires an update(), render() and
-// a handleInput() method.
+// Animate each step
 function step() {
 	update();
 	render();
@@ -90,21 +108,26 @@ function step() {
 
 
 
+// INSTANTIATE NEW GAME OBJECTS
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-let allEnemies = [];
-let player = new Player;
+// Intantiate new enemy array with enemies from contructor
+let allEnemies = [new Enemy(-50,220, 3), new Enemy(-50, 138, 5), new Enemy(-50, 53, 4)];
 
+// Instantiate new player from constructor
+let player = new Player();
+
+// Player's beginning position
 player.x = 200;
 player.y = 380;
 
 
+
+// GAME LISTENERS
+
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
-	var allowedKeys = {
+	let allowedKeys = {
 		37: 'left',
 		38: 'up',
 		39: 'right',
